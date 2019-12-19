@@ -1,24 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import ReactDOM from 'react-dom';
+import Form from './components/Form';
+import Results from './components/Results';
+
+
 
 function App() {
+
+  const [data, setData] = useState({data:[]});
+
+  const handleChildSubmit = (data) => {
+    setData(data);
+    console.log('App data OK: '+JSON.stringify(data));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Form onChildSubmit={handleChildSubmit} />
+      <Results flights={data} />
     </div>
   );
 }
