@@ -1,4 +1,4 @@
-import React,{ useEffect } from 'react';
+import React,{ useState } from 'react';
 import Input from '../Input';
 import Select from '../Select';
 import axios from 'axios';
@@ -9,13 +9,15 @@ import { getDayOfWeekArray } from './../../utils/utils';
 
 const Form = ( {onChildSubmit} ) => {
 
+    const [dati, setDati] = useState([]);
+
     const onFormSubmit = (e) => {
         e.preventDefault();
         
         // Flights search Parameters
         const data = new FormData(e.target);
-        const dateFrom = moment(data.get('dateFrom')).format('DD/MM/YYYY');
-        const dateTo = moment(data.get('dateTo')).format('DD/MM/YYYY');
+        const dateFrom = data.get('dateFrom');
+        const dateTo = data.get('dateTo');
         const placeFrom = data.get('placeFrom');
         const placeTo = data.get('placeTo');
         let dayDeparture;
@@ -30,12 +32,13 @@ const Form = ( {onChildSubmit} ) => {
         // Loop of Fly Search in range time
         for(let i=0; i < daysDeparture.length; i++){
             dayDeparture = daysDeparture[i];
-
             // console.log('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky');
             axios.get('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky')
             .then(res => {
-                console.log('search call OK: '+JSON.stringify(res.data));
+                // console.log('search call: '+JSON.stringify(res.data));
                 onChildSubmit(res.data);
+                // setDati(dati => [...dati, res.data]);    // fallo funzionare
+                // onChildSubmit(dati);
             })
             .catch(function (error) {
                 console.log('error: '+error);
@@ -52,6 +55,7 @@ const Form = ( {onChildSubmit} ) => {
             <Select name="placeTo" label="a" placeholder="luogo arrivo" />
             <br/><br/>
             <Input name="dateFrom" label="Dal" placeholder="data inizio" />
+            <Input name="dateTo" label="al" placeholder="data fine" />
             <br/><br/>
             <span className="formField" >
                 <label name="days-label" >Quanti giorni</label>
@@ -67,3 +71,16 @@ const Form = ( {onChildSubmit} ) => {
 
 
 export default Form;
+
+
+
+
+/*
+
+    TO DO
+    aggiungere al form i campi:
+    ° giorno della settimana di partenza
+    ° fascia oraria di partenza andata
+    ° fascia oraria di partenza ritorno
+
+*/
