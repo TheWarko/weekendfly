@@ -11,6 +11,7 @@ function App() {
 
   const handleChildSubmit = (data) => {
     setData(data);
+    console.log('APP: '+JSON.stringify({data}));
   }
 
   return (

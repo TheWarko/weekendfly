@@ -11,7 +11,7 @@ const Results = ( {flights} ) => {
             {
                 flights.data.map((flight) => {
                     return (
-                        <div>
+                        <div key={flight.id} >
                             <div className="flight__title" >GOING</div>
                             <div className="flight__time" >{ moment.unix(flight.route[0].dTimeUTC).format('DD/MM/YYYY hh:mm') }</div>
                             <div className="flight__airport" >{ flight.route[0].cityFrom }{ flight.route[0].flyFrom }</div>
@@ -29,13 +29,9 @@ const Results = ( {flights} ) => {
     )
 }
 
+Results.defaultProps = { 
+    data:[] 
+}
+
 
 export default Results;
-
-
-/*
-
-    TO DO
-    ° I risultati dei voli vengono sovrascritti. Vanno concatenati tra loro e stampati.
-
-*/

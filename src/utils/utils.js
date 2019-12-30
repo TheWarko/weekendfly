@@ -1,9 +1,9 @@
 import moment from 'moment';
 
 // The function return array that contains all friday in range time search
-export const getDayOfWeekArray = (searchFrom,searchTo) => {
+export const getDayOfWeekArray = (searchFrom,searchTo,departureDay) => {
 
-    const dayOfWeek = 5; //friday is day 5 of week
+    const dayOfWeek = parseInt(departureDay); //friday is day 5 of week
     let dayOfWeekArray = [];
     let day = new Date(searchFrom);
     const finalDate = new Date(searchTo);
