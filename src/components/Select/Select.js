@@ -1,5 +1,26 @@
 import React,{ useState, useEffect } from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
+
+const SelectX = styled.select`
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #eee;
+    margin: 0 10px;
+    border-radius: 5px;
+    outline: none;
+    padding: 0 10px;
+    font-size: 14px;
+    @media screen and (min-width: 40em) {
+        font-size: 20px;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 20px;
+      }
+`;
+
+const FormField = styled.span`
+`;
 
 
 const Select = (props) => {
@@ -25,19 +46,21 @@ const Select = (props) => {
     }, []);
 
     return (
-        <span className="formField" >
+        <FormField>
             <label name={props.name+"-label"} >{props.label}</label>
-            <select name={props.name} required >
+            <SelectX name={props.name} defaultValue={'MIL'} required >
                 {
                     data.map((d) => {
                         if(d.rank <= 7){
                             // console.log(d.name+" "+d.rank);
-                            return <option key={d.id} value={d.code} selected={d.name === 'Milan' ? 'selected' : ''} >{d.name}</option>;
+                            return <option key={d.id} value={d.code} >{d.name}</option>;
+                        }else{
+                            return false;
                         }
                     })
                 }
-            </select>
-        </span>
+            </SelectX>
+        </FormField>
     )
 }
 

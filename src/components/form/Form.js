@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, useReducer } from 'react';
+import React from 'react';
 import Input from '../Input';
 import Select from '../Select';
 import axios from 'axios';
@@ -8,14 +8,31 @@ import styled from 'styled-components';
 
 
 const FormContainer = styled.div`
-  background-color: yellow;
-  min-height: 100vh;
-  padding: 50px;
+  padding: 30px;
+  font-size: 16px;
+  @media screen and (min-width: 40em) {
+    padding: 50px;
+  }
 `;
 
 const Title = styled.div`
-  font-size: 42px;
-  margin-bottom: 40px;
+    font-size: 42px;
+    margin-bottom: 40px;
+    color: #fff;
+    background-color: #d70c7b;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px;
+    font-weight: bold;
+`;
+
+const Suggestion = styled.span`
+    font-size: 12px;
+    color: #444;
+    font-weight: normal;
+    margin-top: -5px;
+    padding-bottom: 5px;
+    display: block;
 `;
 
 const Button = styled.button`
@@ -29,32 +46,41 @@ const Button = styled.button`
   line-leight: 40px;
   cursor: pointer;
   margin-top: 40px;
+  outline: none;
 `;
 
-// const reducer = (state, action) => {
-//     switch(action.type) {
-//       case 'append':
-//         return [...state, action.payload]
-//     }
-//   }
+const SelectX = styled.select`
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #eee;
+    margin: 0 10px;
+    padding: 0 10px;
+    border-radius: 5px;
+    outline: none;
+`;
+
+const FormGroup = styled.div`
+    display: flex;
+    margin-bottom: 30px;
+    max-width: 407px;
+    justify-content: space-between;
+`;
+const FormField = styled.div`
+`;
+const Label = styled.p`
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #000;
+`;
+
 
 const Form = ( {onChildSubmit} ) => {
 
-    // const [dati, dispatch] = useReducer(reducer, [])
-
-    const [dati, setDati] = useState([]);
-
-    // useEffect(() => {
-    //     setFlights([...flights, dati ]);
-                
-    //     console.log('search call 2: '+flights);
-
-    //     onChildSubmit(flights);
-    // })
-
-
     const onFormSubmit = async (e) => {
         e.preventDefault();
+
+        onChildSubmit({loading : 'Sto cercando voli...'});
         
         // Flights search Parameters
         const data = new FormData(e.target);
@@ -72,24 +98,21 @@ const Form = ( {onChildSubmit} ) => {
         const ret_dtimeTo = data.get('ret_hTo');
         const daysDeparture = getDayOfWeekArray(dateFrom,dateTo,departureDay);
 
+        const results = [];
+
         // Loop of Fly Search in range time
         for(let i=0; i < daysDeparture.length; i++){
             dayDeparture = daysDeparture[i];
             // console.log('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky');
-            axios.get('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky')
+            await axios.get('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky')
             .then(res => {
 
-                // dispatch({type: 'append', payload: res.data})
+                console.log('search call: OK');
 
-                // setDati(dati => ([...dati, res.data]));  // NON VA! Fallo funzionare.
-                // setDati([...dati, res.data]);
-
-                // setDati(res.data);
-                // setFlights([...flights, dati ]);
-                // console.log('search call 1: '+JSON.stringify(res.data));
-                // console.log('search call 2: '+JSON.stringify(flights));
-
-                onChildSubmit(res.data);
+                // Push all flights in Results[]
+                for(var i in res.data.data) {
+                    results.push(res.data.data[i]);
+                }
 
             })
             .catch(function (error) {
@@ -99,7 +122,8 @@ const Form = ( {onChildSubmit} ) => {
             });
         }
 
-        // onChildSubmit(dati);
+        // console.log('Results: '+JSON.stringify(results));
+        results.length ? onChildSubmit(results) : onChildSubmit({noresults : 'Non ci sono voli. Prova a cambiare i filtri di ricerca.'});
 
     }
 
@@ -107,40 +131,50 @@ const Form = ( {onChildSubmit} ) => {
         <FormContainer>
             <form onSubmit={onFormSubmit} >
 
-                <Title>Trova i migliori voli per i weekend.</Title>
+                <Title>Trova i migliori voli per i weekend.</Title><br/>
 
-                <Select name="placeFrom" label="Da" placeholder="luogo partenza" />
-                <Select name="placeTo" label="a" placeholder="luogo arrivo" />
-                <br/><br/>
+                <Select name="placeFrom" label="" placeholder="luogo partenza" />
+                <Select name="placeTo" label="✈" placeholder="luogo arrivo" />
+                <br/><br/><br/>
 
-                <Input name="dateFrom" type="date" label="Dal" placeholder="data inizio" />
-                <Input name="dateTo" type="date" label="al" placeholder="data fine" />
-                <br/><br/>
+                <Label>Periodo in cui sei disposto a partire</Label>
+                <Suggestion>Inserisci un periodo di settimane o mesi nel quale effettuare la ricerca dei voli</Suggestion>
+                <FormGroup>
+                    <Input name="dateFrom" type="date" label="dal" placeholder="data inizio" />
+                    <Input name="dateTo" type="date" label="al" placeholder="data fine" />
+                </FormGroup>
 
-                <span className="formField" >
-                    <label name="day-label" >Giorno della partenza</label>
-                    <select name="day" required>
-                        <option value="1">Lunedì</option>
-                        <option value="2">Martedì</option>
-                        <option value="3">Mercoledì</option>
-                        <option value="4">Giovedì</option>
-                        <option value="5" selected >Venerdì</option>
-                        <option value="6">Sabato</option>
-                        <option value="0">Domenica</option>
-                    </select>
-                </span>
+                <Label>Quando vorresti partire</Label>
+                <FormGroup>
+                    <FormField>
+                        <label name="day-label" >Giorno</label>
+                        <SelectX name="day"  defaultValue={5} required>
+                            <option value="1">Lunedì</option>
+                            <option value="2">Martedì</option>
+                            <option value="3">Mercoledì</option>
+                            <option value="4">Giovedì</option>
+                            <option value="5">Venerdì</option>
+                            <option value="6">Sabato</option>
+                            <option value="0">Domenica</option>
+                        </SelectX>
+                    </FormField>
 
-                <Input name="days" type="number" label="Quanti giorni" placeholder="2" value="2" />
-                <br/><br/>
-                
-                <Input name="hFrom" type="time" label="Orario di partenza dalle" placeholder="13:00" value="13:00" />
-                <Input name="hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
-                <br/>
+                    <Input name="days" type="number" label="Quanti giorni" placeholder="2" value="2" />
+                </FormGroup>
 
-                <Input name="ret_hFrom" type="time" label="Orario di ritorno dalle" placeholder="13:00" value="13:00" />
-                <Input name="ret_hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
+                <Label>Fascia oraria in cui partire</Label>
+                <FormGroup>
+                    <Input name="hFrom" type="time" label="dalle" placeholder="13:00" value="13:00" />
+                    <Input name="hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
+                </FormGroup>
 
-                <Button>Scansiona voli</Button>
+                <Label>Fascia oraria del ritorno</Label>
+                <FormGroup>
+                    <Input name="ret_hFrom" type="time" label="dalle" placeholder="13:00" value="13:00" />
+                    <Input name="ret_hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
+                </FormGroup>
+
+                <Button>Cerca voli ✈</Button>
             </form>
         </FormContainer>
     )
@@ -150,13 +184,3 @@ const Form = ( {onChildSubmit} ) => {
 
 export default Form;
 
-
-
-
-/*
-
-    TO DO
-    ° I risultati dei voli vengono sovrascritti. Vanno stampati concatenati. Row 41.
-    ° Style it. Row 11.
-
-*/

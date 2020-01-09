@@ -1,12 +1,25 @@
 import React from 'react';
+import styled from 'styled-components';
 
+const InputX = styled.input`
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #eee;
+    margin: 0 10px;
+    padding: 0 10px;
+    border-radius: 5px;
+    outline: none;
+`;
+
+const FormField = styled.div`
+`;
 
 const Input = (props) => {
     return (
-        <span className="formField" >
+        <FormField>
             <label name={props.name+"-label"} >{props.label}</label>
-            <input type={props.type} name={props.name} placeholder={props.placeholder} value={props.value} required />
-        </span>
+            <InputX type={props.type} name={props.name} placeholder={props.placeholder} defaultValue={props.value} required />
+        </FormField>
     )
 }
 
