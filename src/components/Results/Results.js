@@ -96,7 +96,7 @@ const Results = ( {flights} ) => {
                             <Route>
                                 <div className="flight__airport" >
                                     <Label>Areoporto</Label> 
-                                    { d.route[0].cityFrom }{ d.route[0].flyFrom }
+                                    { d.route[0].cityFrom }{ d.route[0].flyFrom } ✈ { d.route[0].cityTo }{ d.route[0].flyTo }
                                 </div>
                                 <div className="flight__time" >
                                     <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
@@ -107,7 +107,7 @@ const Results = ( {flights} ) => {
                             <Route>
                                 <div className="flight__airport" >
                                     <Label>Areoporto</Label> 
-                                    { d.route[1].cityFrom }{ d.route[1].flyFrom }
+                                    { d.route[1].cityFrom }{ d.route[1].flyFrom } ✈ { d.route[1].cityTo }{ d.route[1].flyTo }
                                 </div>
                                 <div className="flight__time" >
                                 <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
