@@ -100,7 +100,7 @@ const Results = ( {flights} ) => {
                                 </div>
                                 <div className="flight__time" >
                                     <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
-                                    { moment.unix(d.route[0].dTimeUTC).format('DD/MM/YYYY hh:mm') }
+                                    { moment.unix(d.route[0].dTimeUTC).format('DD/MM/YYYY HH:mm') }
                                 </div>
                             </Route>
 
@@ -111,7 +111,7 @@ const Results = ( {flights} ) => {
                                 </div>
                                 <div className="flight__time" >
                                 <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
-                                { moment.unix(d.route[1].dTimeUTC).format('DD/MM/YYYY hh:mm') }
+                                { moment.unix(d.route[1].dTimeUTC).format('DD/MM/YYYY HH:mm') }
                                 </div>
                             </Route>
                         </Routes>
