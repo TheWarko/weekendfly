@@ -1,9 +1,10 @@
 ![](https://github.com/TheWarko/weekendfly/blob/master/public/logo.png) ✈️ 
 
 A flights research for specifics days of week. \
-For example you can search flight availables for all weekends of next months and booking at the better price. \
+For example you can search flight availables for all weekends of next months and booking at the best price. \
 It's a my personal idea and project to start learning ReactJS.
 
+## Preview
 ![](https://github.com/TheWarko/weekendfly/blob/master/public/preview.png)
 
 ## API
