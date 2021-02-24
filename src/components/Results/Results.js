@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState,useEffect } from 'react';
+import { useSelector } from 'react-redux'
 import moment from 'moment';
 import styled from 'styled-components';
 
@@ -66,66 +67,64 @@ const PriceBtn = styled.div`
 
 
 
-const Results = ( {flights} ) => {
+const Results = () => {
 
-    // console.log('flights: '+JSON.stringify(flights));
+    const searchData = useSelector(state => state.search)
+    const [sortable,setSortable] = useState([]);
+    // console.log('searchData',searchData.data);
 
-    if(flights.loading){
-        return (
-            <div>
-                <Text>{flights.loading}</Text>
-            </div>
-        )
-    }
+    useEffect(() => {
+        if (Object.entries(searchData.data).length){
+            setSortable([...sortable,searchData.data]);
+        }
+    },[searchData])
 
-    if(flights.noresults){
-        return (
-            <div>
-                <Text>{flights.noresults}</Text>
-            </div>
-        )
-    }
+    // TO DO: understand why not prints results properly
+    return (
+        searchData.loading ? ( <Text>Sto cercando voli...</Text> ) :
+        ( sortable.length > 1 ) ? (
+            sortable.sort( (a, b) => a.price - b.price ).map((d) => {
+                return (
+                        <div key={d.id+'-'+Math.random(999)} >
 
-    return flights.sort( (a, b) => a.price - b.price ).map((d) => {
-        return (
-            <div>
-                <div key={d.id} >
+                            <Fly>
+                                <Routes>
+                                    <Route>
+                                        <div className="flight__airport" >
+                                            <Label>Areoporto</Label> 
+                                            { d.route[0].cityFrom }{ d.route[0].flyFrom } ✈ { d.route[0].cityTo }{ d.route[0].flyTo }
+                                        </div>
+                                        <div className="flight__time" >
+                                            <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
+                                            { moment.unix(d.route[0].dTimeUTC).format('DD/MM/YYYY HH:mm') }
+                                        </div>
+                                    </Route>
+        
+                                    <Route>
+                                        <div className="flight__airport" >
+                                            <Label>Areoporto</Label> 
+                                            { d.route[1].cityFrom }{ d.route[1].flyFrom } ✈ { d.route[1].cityTo }{ d.route[1].flyTo }
+                                        </div>
+                                        <div className="flight__time" >
+                                        <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
+                                        { moment.unix(d.route[1].dTimeUTC).format('DD/MM/YYYY HH:mm') }
+                                        </div>
+                                    </Route>
+                                </Routes>
+        
+                                <PriceBtn>
+                                    <Price className="flight__price" >{ d.price }€</Price>
+                                    <Btn className="flight__link" href={ d.deep_link } target="_blank" rel="noopener noreferrer" >GO!</Btn>
+                                </PriceBtn>
+                            </Fly>
+        
+                        </div>
+                )
+            })
 
-                    <Fly>
-                        <Routes>
-                            <Route>
-                                <div className="flight__airport" >
-                                    <Label>Areoporto</Label> 
-                                    { d.route[0].cityFrom }{ d.route[0].flyFrom } ✈ { d.route[0].cityTo }{ d.route[0].flyTo }
-                                </div>
-                                <div className="flight__time" >
-                                    <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
-                                    { moment.unix(d.route[0].dTimeUTC).format('DD/MM/YYYY HH:mm') }
-                                </div>
-                            </Route>
-
-                            <Route>
-                                <div className="flight__airport" >
-                                    <Label>Areoporto</Label> 
-                                    { d.route[1].cityFrom }{ d.route[1].flyFrom } ✈ { d.route[1].cityTo }{ d.route[1].flyTo }
-                                </div>
-                                <div className="flight__time" >
-                                <Label>Giorno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ora</Label> 
-                                { moment.unix(d.route[1].dTimeUTC).format('DD/MM/YYYY HH:mm') }
-                                </div>
-                            </Route>
-                        </Routes>
-
-                        <PriceBtn>
-                            <Price className="flight__price" >{ d.price }€</Price>
-                            <Btn className="flight__link" href={ d.deep_link } target="_blank" rel="noopener noreferrer" >GO!</Btn>
-                        </PriceBtn>
-                    </Fly>
-
-                </div>
-            </div>
-        )
-    })
+        ) : ( <Text>Non ci sono voli. Prova a cambiare i filtri di ricerca.</Text> )  
+    
+     )
                     
 }
 

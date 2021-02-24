@@ -7,3 +7,8 @@ it('renders without crashing', () => {
   ReactDOM.render(<App />, div);
   ReactDOM.unmountComponentAtNode(div);
 });
+
+// it('form load', () => {
+//   const wrapper = shallow('<Form />');
+//   expect(wrapper.find('Form'))
+// });

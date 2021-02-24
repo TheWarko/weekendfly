@@ -45,13 +45,17 @@ const Select = (props) => {
         getLocations();
     }, []);
 
+    const onFieldChange = (e) => {
+        props.onChange(e)
+    }
+
     return (
         <FormField>
             <label name={props.name+"-label"} >{props.label}</label>
-            <SelectX name={props.name} defaultValue={'MIL'} required >
+            <SelectX name={props.name} defaultValue={'MIL'} onChange={onFieldChange} required >
                 {
                     data.map((d) => {
-                        if(d.rank <= 7){
+                        if(d.rank <= 200){
                             // console.log(d.name+" "+d.rank);
                             return <option key={d.id} value={d.code} >{d.name}</option>;
                         }else{

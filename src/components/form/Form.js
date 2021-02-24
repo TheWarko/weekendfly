@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux'
 import Input from '../Input';
 import Select from '../Select';
-import axios from 'axios';
-import { getDayOfWeekArray } from './../../utils/utils';
+import { fetchSearch } from '../../store/actions/search';
 import styled from 'styled-components';
 
 
@@ -75,56 +75,36 @@ const Label = styled.p`
 `;
 
 
-const Form = ( {onChildSubmit} ) => {
+const Form = () => {
 
-    const onFormSubmit = async (e) => {
+    const initialFormData = Object.freeze({
+        placeFrom: "",
+        placeTo: "",
+        dateFrom: "",
+        dateTo: "",
+        day: 5,
+        days: "2",
+        hFrom: "08:00",
+        hTo: "22:00",
+        ret_hFrom: "08:00",
+        ret_hTo: "22:00",
+    });
+    const [formData,setFormData] = useState(initialFormData);
+    const dispatch = useDispatch()
+
+
+    const onFormChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value.trim()
+        });
+    }
+
+    const onFormSubmit = (e) => {
         e.preventDefault();
 
-        onChildSubmit({loading : 'Sto cercando voli...'});
-        
-        // Flights search Parameters
-        const data = new FormData(e.target);
-        const dateFrom = data.get('dateFrom');
-        const dateTo = data.get('dateTo');
-        const departureDay = data.get('day');
-        const placeFrom = data.get('placeFrom');
-        const placeTo = data.get('placeTo');
-        let dayDeparture;
-        const nightsInDest = data.get('days');
-        const maxStopOvers = 0;
-        const dtimeFrom = data.get('hFrom');
-        const dtimeTo = data.get('hTo');
-        const ret_dtimeFrom = data.get('ret_hFrom');
-        const ret_dtimeTo = data.get('ret_hTo');
-        const daysDeparture = getDayOfWeekArray(dateFrom,dateTo,departureDay);
-
-        const results = [];
-
-        // Loop of Fly Search in range time
-        for(let i=0; i < daysDeparture.length; i++){
-            dayDeparture = daysDeparture[i];
-            // console.log('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=picky');
-            await axios.get('https://api.skypicker.com/flights?flyFrom='+placeFrom+'&to='+placeTo+'&dateFrom='+dayDeparture+'&dateTo='+dayDeparture+'&nights_in_dst_from='+nightsInDest+'&nights_in_dst_to='+nightsInDest+'&max_stopovers='+maxStopOvers+'&dtime_from='+dtimeFrom+'&dtime_to='+dtimeTo+'&ret_dtime_from='+ret_dtimeFrom+'&ret_dtime_to='+ret_dtimeTo+'&partner=marcoebbastaweekendfly')
-            .then(res => {
-
-                console.log('search call: OK');
-
-                // Push all flights in Results[]
-                for(var i in res.data.data) {
-                    results.push(res.data.data[i]);
-                }
-
-            })
-            .catch(function (error) {
-                console.log('error: '+error);
-            })
-            .finally(function () {
-            });
-        }
-
-        // console.log('Results: '+JSON.stringify(results));
-        results.length ? onChildSubmit(results) : onChildSubmit({noresults : 'Non ci sono voli. Prova a cambiare i filtri di ricerca.'});
-
+        console.log('data',formData);
+        dispatch(fetchSearch(formData))
     }
 
     return (
@@ -133,22 +113,22 @@ const Form = ( {onChildSubmit} ) => {
 
                 <Title>Trova i migliori voli per i weekend.</Title><br/>
 
-                <Select name="placeFrom" label="" placeholder="luogo partenza" />
-                <Select name="placeTo" label="✈" placeholder="luogo arrivo" />
+                <Select name="placeFrom" label="" placeholder="luogo partenza" onChange={onFormChange} />
+                <Select name="placeTo" label="✈" placeholder="luogo arrivo" onChange={onFormChange} />
                 <br/><br/><br/>
 
                 <Label>Periodo in cui sei disposto a partire</Label>
                 <Suggestion>Inserisci un periodo di settimane o mesi nel quale effettuare la ricerca dei voli</Suggestion>
                 <FormGroup>
-                    <Input name="dateFrom" type="date" label="dal" placeholder="data inizio" />
-                    <Input name="dateTo" type="date" label="al" placeholder="data fine" />
+                    <Input name="dateFrom" type="date" label="dal" placeholder="data inizio" onChange={onFormChange} />
+                    <Input name="dateTo" type="date" label="al" placeholder="data fine" onChange={onFormChange} />
                 </FormGroup>
 
                 <Label>Quando vorresti partire</Label>
                 <FormGroup>
                     <FormField>
                         <label name="day-label" >Giorno</label>
-                        <SelectX name="day"  defaultValue={5} required>
+                        <SelectX name="day"  defaultValue={initialFormData.day} onChange={onFormChange} required>
                             <option value="1">Lunedì</option>
                             <option value="2">Martedì</option>
                             <option value="3">Mercoledì</option>
@@ -159,19 +139,19 @@ const Form = ( {onChildSubmit} ) => {
                         </SelectX>
                     </FormField>
 
-                    <Input name="days" type="number" label="Quanti giorni" placeholder="2" value="2" />
+                    <Input name="days" type="number" label="Quanti giorni" placeholder={initialFormData.days} value={initialFormData.days} onChange={onFormChange} />
                 </FormGroup>
 
                 <Label>Fascia oraria in cui partire</Label>
                 <FormGroup>
-                    <Input name="hFrom" type="time" label="dalle" placeholder="13:00" value="13:00" />
-                    <Input name="hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
+                    <Input name="hFrom" type="time" label="dalle" placeholder={initialFormData.hFrom} value={initialFormData.hFrom}  onChange={onFormChange} />
+                    <Input name="hTo" type="time" label="alle" placeholder={initialFormData.hTo} value={initialFormData.hTo}  onChange={onFormChange} />
                 </FormGroup>
 
                 <Label>Fascia oraria del ritorno</Label>
                 <FormGroup>
-                    <Input name="ret_hFrom" type="time" label="dalle" placeholder="13:00" value="13:00" />
-                    <Input name="ret_hTo" type="time" label="alle" placeholder="14:00" value="14:00" />
+                    <Input name="ret_hFrom" type="time" label="dalle" placeholder={initialFormData.ret_hFrom} value={initialFormData.ret_hFrom}  onChange={onFormChange} />
+                    <Input name="ret_hTo" type="time" label="alle" placeholder={initialFormData.ret_hTo} value={initialFormData.ret_hTo} onChange={onFormChange} />
                 </FormGroup>
 
                 <Button>Cerca voli ✈</Button>

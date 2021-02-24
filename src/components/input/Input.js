@@ -15,10 +15,15 @@ const FormField = styled.div`
 `;
 
 const Input = (props) => {
+
+    const onFieldChange = (e) => {
+        props.onChange(e)
+    }
+
     return (
         <FormField>
             <label name={props.name+"-label"} >{props.label}</label>
-            <InputX type={props.type} name={props.name} placeholder={props.placeholder} defaultValue={props.value} required />
+            <InputX type={props.type} name={props.name} placeholder={props.placeholder} defaultValue={props.value} onChange={onFieldChange} required />
         </FormField>
     )
 }
